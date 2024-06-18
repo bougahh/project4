@@ -15,7 +15,7 @@ Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     Eigen::MatrixXf K = Eigen::MatrixXf::Zero(6, 6);
     Eigen::Vector2f input = quadrotor.GravityCompInput();
 
-    Q.diagonal() << 10, 10, 10, 1, 10, 0.25 / 2 / M_PI;
+    Q.diagonal() << 10, 10, 100, 1, 1, 0.25 / 2 / M_PI;
     R.row(0) << 0.1, 0.05;
     R.row(1) << 0.05, 0.1;
 
@@ -31,12 +31,14 @@ void control(PlanarQuadrotor &quadrotor, const Eigen::MatrixXf &K) {
     quadrotor.SetInput(input - K * quadrotor.GetControlState());
 }
 
+
 int main(int argc, char* args[])
 {
     std::shared_ptr<SDL_Window> gWindow = nullptr;
     std::shared_ptr<SDL_Renderer> gRenderer = nullptr;
     const int SCREEN_WIDTH = 1280;
     const int SCREEN_HEIGHT = 720;
+    const float SCALE_FACTOR = 100.0f;
 
     /**
      * TODO: Extend simulation
@@ -89,22 +91,21 @@ int main(int argc, char* args[])
                 else if (e.type == SDL_MOUSEMOTION)
                 {
                     SDL_GetMouseState(&x, &y);
-                    x += SCREEN_WIDTH/2;
-                    y = SCREEN_HEIGHT/2 - y;
-                    
-                    std::cout << "Mouse position: (" << x << ", " << y << ")" << std::endl;
-                }
-                else if (e.type = SDL_MOUSEBUTTONDOWN)
-                {
-                    SDL_GetMouseState(&x, &y);
-                    x += SCREEN_WIDTH/2;
+                    x -= SCREEN_WIDTH/2;
                     y = SCREEN_HEIGHT/2 - y;
 
-                    goal_state << x, y, 0, 0, 0, 0;
+                    std::cout << "Mouse position: (" << x << ", " << y << ")" << std::endl;
+                }
+                else if (e.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    x -= SCREEN_WIDTH/2;
+                    y = SCREEN_HEIGHT/2 - y;
+
+                    goal_state << x/SCALE_FACTOR, y/SCALE_FACTOR, 0, 0, 0, 0;
                     quadrotor.SetGoal(goal_state);
                     std::cout << "Goal position: (" << x << ", " << y << ")" << std::endl;
                 }
-                
             }
 
             SDL_Delay((int) dt * 1000);
