@@ -11,12 +11,29 @@ PlanarQuadrotorVisualizer::PlanarQuadrotorVisualizer(PlanarQuadrotor *quadrotor_
 void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer) {
     Eigen::VectorXf state = quadrotor_ptr->GetState();
     float q_x, q_y, q_theta;
+    int screen_width, screen_height;
+
+    SDL_GetRendererOutputSize(gRenderer.get(), &screen_width, &screen_height);
 
     /* x, y, theta coordinates */
-    q_x = state[0];
-    q_y = state[1];
+    q_x = state[0] + screen_width/2;
+    q_y = screen_height/2 - state[1];
     q_theta = state[2];
 
     SDL_SetRenderDrawColor(gRenderer.get(), 0xFF, 0x00, 0x00, 0xFF);
     filledCircleColor(gRenderer.get(), q_x, q_y, 30, 0xFF0000FF);
+
+    const int line_length = 100;
+    float x1,x2,y1,y2,dx,dy;
+
+    dx = line_length/2 * cos(q_theta);
+    dy = line_length/2 * sin(q_theta);
+
+    x1 = q_x - dx;
+    y1 = q_y - dy;
+    x2 = q_x + dx;
+    y2 = q_y + dy;
+
+    SDL_SetRenderDrawColor(gRenderer.get(), 0x00, 0x00, 0x00, 0xFF);
+    SDL_RenderDrawLine(gRenderer.get(),x1,y1,x2,y2);
 }
