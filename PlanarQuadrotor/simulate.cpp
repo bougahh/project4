@@ -2,6 +2,7 @@
  * SDL window creation adapted from https://github.com/isJuhn/DoublePendulum
 */
 #include "simulate.h"
+#include "matplot/matplot.h"
 
 Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     /* Calculate LQR gain matrix */
@@ -31,6 +32,23 @@ void control(PlanarQuadrotor &quadrotor, const Eigen::MatrixXf &K) {
     quadrotor.SetInput(input - K * quadrotor.GetControlState());
 }
 
+void plot_trajectory(const std::vector<float> &x_history, const std::vector<float> &y_history, const std::vector<float> &theta_history){
+    using namespace matplot;
+
+    figure();
+    plot(x_history, y_history)->line_width(2).color("r");
+    title("Quadrotor Trajectory");
+    xlabel("x");
+    ylabel("y");
+    
+    figure();
+    plot(theta_history)->line_width(2).color("g");
+    title("Theta angle history");
+    xlabel("t[ms]");
+    ylabel("Theta");
+
+    show();
+}
 
 int main(int argc, char* args[])
 {
@@ -106,6 +124,13 @@ int main(int argc, char* args[])
                     quadrotor.SetGoal(goal_state);
                     std::cout << "Goal position: (" << x << ", " << y << ")" << std::endl;
                 }
+                else if (e.type == SDL_KEYDOWN)
+                {
+                    if (e.key.keysym.sym == SDLK_p)
+                    {
+                        plot_trajectory(x_history,y_history,theta_history);
+                    }
+                }
             }
 
             SDL_Delay((int) dt * 1000);
@@ -121,6 +146,11 @@ int main(int argc, char* args[])
             /* Simulate quadrotor forward in time */
             control(quadrotor, K);
             quadrotor.Update(dt);
+
+            state = quadrotor.GetState();
+            x_history.push_back(state[0]);
+            y_history.push_back(state[1]);
+            theta_history.push_back(state[2]);
         }
     }
     SDL_Quit();
