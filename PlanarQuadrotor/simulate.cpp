@@ -16,7 +16,7 @@ Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     Eigen::MatrixXf K = Eigen::MatrixXf::Zero(6, 6);
     Eigen::Vector2f input = quadrotor.GravityCompInput();
 
-    Q.diagonal() << 10, 10, 100, 1, 1, 0.25 / 2 / M_PI;
+    Q.diagonal() << 5, 5, 5, 1, 1, 10 / 2 / M_PI;
     R.row(0) << 0.1, 0.05;
     R.row(1) << 0.05, 0.1;
 
@@ -109,7 +109,7 @@ int main(int argc, char* args[])
                 else if (e.type == SDL_MOUSEMOTION)
                 {
                     SDL_GetMouseState(&x, &y);
-                    x -= SCREEN_WIDTH/2;
+                    x = x - SCREEN_WIDTH/2;
                     y = SCREEN_HEIGHT/2 - y;
 
                     std::cout << "Mouse position: (" << x << ", " << y << ")" << std::endl;
@@ -117,7 +117,7 @@ int main(int argc, char* args[])
                 else if (e.type == SDL_MOUSEBUTTONDOWN)
                 {
                     SDL_GetMouseState(&x, &y);
-                    x -= SCREEN_WIDTH/2;
+                    x = x - SCREEN_WIDTH/2;
                     y = SCREEN_HEIGHT/2 - y;
 
                     goal_state << x/SCALE_FACTOR, y/SCALE_FACTOR, 0, 0, 0, 0;
