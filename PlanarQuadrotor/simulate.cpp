@@ -16,7 +16,7 @@ Eigen::MatrixXf LQR(PlanarQuadrotor &quadrotor, float dt) {
     Eigen::MatrixXf K = Eigen::MatrixXf::Zero(6, 6);
     Eigen::Vector2f input = quadrotor.GravityCompInput();
 
-    Q.diagonal() << 5, 5, 5, 1, 1, 10 / 2 / M_PI;
+    Q.diagonal() << 1, 1, 5, 1, 1, .5 / 2 / M_PI;
     R.row(0) << 0.1, 0.05;
     R.row(1) << 0.05, 0.1;
 
