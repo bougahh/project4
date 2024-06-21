@@ -11,7 +11,7 @@ PlanarQuadrotorVisualizer::PlanarQuadrotorVisualizer(PlanarQuadrotor *quadrotor_
  */
 void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer) {
     Eigen::VectorXf state = quadrotor_ptr->GetState();
-    float q_x, q_y, q_theta, propeller_speed = 100.0f, scale = 100.0f;
+    float q_x, q_y, q_theta, propeller_speed = 80.0f, scale = 100.0f;
     int screen_width, screen_height;
     Uint32 ticks = SDL_GetTicks()/10.0f;
 
@@ -27,9 +27,9 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
     filledCircleColor(gRenderer.get(), q_x, q_y, 30, 0xFF0000FF);
     */
 
-    int line_length = 100;
-    int propeller_mount_height = 25, propeller_length = 15;
-    int propeller_mount_offset = 5;
+    int line_length = 80;
+    int propeller_mount_height = 20, propeller_length = 12;
+    int propeller_mount_offset = 10;
 
     float propeller_sin = sin(q_theta + ticks * propeller_speed), propeller_cos = cos(q_theta + ticks * propeller_speed);
 
