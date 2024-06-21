@@ -11,7 +11,7 @@ PlanarQuadrotorVisualizer::PlanarQuadrotorVisualizer(PlanarQuadrotor *quadrotor_
  */
 void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer) {
     Eigen::VectorXf state = quadrotor_ptr->GetState();
-    float q_x, q_y, q_theta, propeller_speed = 10.0f, scale = 100.0f;
+    float q_x, q_y, q_theta, propeller_speed = 100.0f, scale = 100.0f;
     int screen_width, screen_height;
     Uint32 ticks = SDL_GetTicks()/10.0f;
 
@@ -28,7 +28,8 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
     */
 
     int line_length = 100;
-    int propeller_mount_height = 30, propeller_length = 20;
+    int propeller_mount_height = 25, propeller_length = 15;
+    int propeller_mount_offset = 5;
 
     float propeller_sin = sin(q_theta + ticks * propeller_speed), propeller_cos = cos(q_theta + ticks * propeller_speed);
 
@@ -42,14 +43,14 @@ void PlanarQuadrotorVisualizer::render(std::shared_ptr<SDL_Renderer> &gRenderer)
     q_coords[0][3] = q_y + (line_length / 2) * sin_theta;
 
     // Propeller mount left coordinates
-    q_coords[1][0] = q_x - (line_length / 4) * cos_theta;
-    q_coords[1][1] = q_y + (line_length / 4) * sin_theta;
+    q_coords[1][0] = q_x - ((line_length / 4) + propeller_mount_offset) * cos_theta;
+    q_coords[1][1] = q_y + ((line_length / 4) + propeller_mount_offset) * sin_theta;
     q_coords[1][2] = q_coords[1][0] - propeller_mount_height * sin_theta;
     q_coords[1][3] = q_coords[1][1] - propeller_mount_height * cos_theta;
 
     // Propeller mount right coordinates
-    q_coords[2][0] = q_x + (line_length / 4) * cos_theta;
-    q_coords[2][1] = q_y - (line_length / 4) * sin_theta;
+    q_coords[2][0] = q_x + ((line_length / 4) + propeller_mount_offset) * cos_theta;
+    q_coords[2][1] = q_y - ((line_length / 4) + propeller_mount_offset) * sin_theta;
     q_coords[2][2] = q_coords[2][0] - propeller_mount_height * sin_theta;
     q_coords[2][3] = q_coords[2][1] - propeller_mount_height * cos_theta;
 

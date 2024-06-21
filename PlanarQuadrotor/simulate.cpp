@@ -76,7 +76,7 @@ int main(int argc, char* args[])
     goal_state << 0, 0, 0, 0, 0, 0;
     quadrotor.SetGoal(goal_state);
     /* Timestep for the simulation */
-    const float dt = 0.001;
+    const float dt = 0.1;
     Eigen::MatrixXf K = LQR(quadrotor, dt);
     Eigen::Vector2f input = Eigen::Vector2f::Zero(2);
 
@@ -94,8 +94,11 @@ int main(int argc, char* args[])
         SDL_Event e;
         bool quit = false;
         float delay;
-        int x, y;
+        int x, y, xg = 0, yg = 0;
         Eigen::VectorXf state = Eigen::VectorXf::Zero(6);
+        Eigen::VectorXf ctr_state = Eigen::VectorXf::Zero(6);
+        Eigen::VectorXf close_to_zero = Eigen::VectorXf::Zero(6);
+        close_to_zero << 0.001, 0.001, 0.001, 0.001, 0.001, 0.001;
 
         while (!quit)
         {
@@ -116,13 +119,13 @@ int main(int argc, char* args[])
                 }
                 else if (e.type == SDL_MOUSEBUTTONDOWN)
                 {
-                    SDL_GetMouseState(&x, &y);
-                    x = x - SCREEN_WIDTH/2;
-                    y = SCREEN_HEIGHT/2 - y;
+                    SDL_GetMouseState(&xg, &yg);
+                    xg = xg - SCREEN_WIDTH/2;
+                    yg = SCREEN_HEIGHT/2 - yg;
 
-                    goal_state << x/SCALE_FACTOR, y/SCALE_FACTOR, 0, 0, 0, 0;
+                    goal_state << xg/SCALE_FACTOR, yg/SCALE_FACTOR, 0, 0, 0, 0;
                     quadrotor.SetGoal(goal_state);
-                    std::cout << "Goal position: (" << x << ", " << y << ")" << std::endl;
+                    std::cout << "Goal position: (" << xg << ", " << yg << ")" << std::endl;
                 }
                 else if (e.type == SDL_KEYDOWN)
                 {
@@ -141,6 +144,8 @@ int main(int argc, char* args[])
             /* Quadrotor rendering step */
             quadrotor_visualizer.render(gRenderer);
 
+            ctr_state = quadrotor.GetControlState();
+            if((ctr_state.array().abs() > close_to_zero.array()).all()) filledCircleColor(gRenderer.get(), xg + SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-yg, 5, 0x60FF0080);
             SDL_RenderPresent(gRenderer.get());
 
             /* Simulate quadrotor forward in time */
